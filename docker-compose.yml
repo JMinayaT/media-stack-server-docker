@@ -19,9 +19,9 @@ services:
       - 51413:51413
       - 51413:51413/udp
     volumes:
-      - tx-config:/config
-      - torrent-downloads:/downloads
-      - tx-watch:/watch
+      - /media/config/tx:/config
+      - /media/downloads:/downloads
+      - /media/watch/tx:/watch
     restart: "unless-stopped"
 
   ## Default credentials - Username: admin password: adminadmin ##
@@ -39,8 +39,8 @@ services:
       - TZ=UTC
       - WEBUI_PORT=5080
     volumes:
-      - qbittorrent-config:/config
-      - torrent-downloads:/downloads
+      - /media/config/qbittorrent:/config
+      - /media/downloads:/downloads
     ports:
       - 5080:5080
       - 6881:6881
@@ -59,8 +59,8 @@ services:
     ports:
       - 7878:7878
     volumes:
-      - radarr-config:/config
-      - torrent-downloads:/downloads
+      - /media/config/radarr:/config
+      - /media/downloads:/downloads
     restart: "unless-stopped"
 
   sonarr:
@@ -74,8 +74,8 @@ services:
       - PGID=1000
       - TZ=UTC
     volumes:
-      - sonarr-config:/config
-      - torrent-downloads:/downloads
+      - /media/config/sonarr:/config
+      - /media/downloads:/downloads
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -91,7 +91,7 @@ services:
       - PGID=1000
       - TZ=UTC
     volumes:
-      - jackett-config:/config
+      - /media/config/jackett:/config
       - jackett-blackhole:/downloads
     ports:
       - 9117:9117
@@ -109,7 +109,7 @@ services:
       - PGID=1000
       - TZ=UTC
     volumes:
-      - prowlarr-config:/config
+      - /media/config/prowlarr:/config
     ports:
       - 9696:9696
     restart: unless-stopped
@@ -126,7 +126,7 @@ services:
       - TZ=UTC
     volumes:
       - jellyfin-config:/config
-      - torrent-downloads:/data
+      - /media/downloads:/data
   # devices:
    #  - /dev/videoN:/dev/videoN # Mount GPU device 
     ports:
@@ -134,28 +134,6 @@ services:
       - 7359:7359/udp
       - 8920:8920
     restart: unless-stopped
-
-volumes:
-  torrent-downloads:
-    driver: media
-  radarr-config:
-    driver: media
-  sonarr-config:
-    driver: media
-  jackett-config:
-    driver: media
-  jackett-blackhole:
-    driver: media
-  prowlarr-config:
-    driver: media
-  jellyfin-config:
-    driver: media
-  qbittorrent-config:
-    driver: media
-  tx-config:
-    driver: media
-  tx-watch:
-    driver: media
 
 networks:
   mynetwork:
