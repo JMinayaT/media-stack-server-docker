@@ -5,7 +5,6 @@ services:
     profiles: ["tx", "stack-1"]
     container_name: transmission
     image: linuxserver/transmission:4.0.3
-   
     networks: 
       - mynetwork 
     environment:
@@ -30,7 +29,6 @@ services:
     container_name: qbittorrent
     profiles: ["qbt", "stack-1"]
     image: lscr.io/linuxserver/qbittorrent:4.5.4
-
     networks:             
       - mynetwork         
     environment:
@@ -125,7 +123,7 @@ services:
       - PGID=1000
       - TZ=UTC
     volumes:
-      - jellyfin-config:/config
+      - /media/config/jellyfin:/config
       - /media/downloads:/data
   # devices:
    #  - /dev/videoN:/dev/videoN # Mount GPU device 
