@@ -90,7 +90,7 @@ services:
       - TZ=UTC
     volumes:
       - /media/config/jackett:/config
-      - jackett-blackhole:/downloads
+      - /media/downloads/jackett:/downloads
     ports:
       - 9117:9117
     restart: unless-stopped
