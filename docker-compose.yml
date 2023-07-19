@@ -1,0 +1,162 @@
+version: "3.9"
+name: media-stack
+services:
+  transmission:
+    profiles: ["tx", "stack-1"]
+    container_name: transmission
+    image: linuxserver/transmission:4.0.3
+   
+    networks: 
+      - mynetwork 
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - USER=admin
+      - PASS=adminadmin
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    volumes:
+      - tx-config:/config
+      - torrent-downloads:/downloads
+      - tx-watch:/watch
+    restart: "unless-stopped"
+
+  ## Default credentials - Username: admin password: adminadmin ##
+  ## Change password after install from UI --> Tools --> Options --> WebUI ##
+  qbittorrent:
+    container_name: qbittorrent
+    profiles: ["qbt", "stack-1"]
+    image: lscr.io/linuxserver/qbittorrent:4.5.4
+
+    networks:             
+      - mynetwork         
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - WEBUI_PORT=5080
+    volumes:
+      - qbittorrent-config:/config
+      - torrent-downloads:/downloads
+    ports:
+      - 5080:5080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: "unless-stopped"
+  radarr:
+    profiles: ["base", "radarr", "stack-1", "stack-2"]
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:4.6.4
+    networks:
+      - mynetwork
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    ports:
+      - 7878:7878
+    volumes:
+      - radarr-config:/config
+      - torrent-downloads:/downloads
+    restart: "unless-stopped"
+
+  sonarr:
+    profiles: ["base", "sonarr", "stack-1", "stack-2"]
+    image: linuxserver/sonarr:4.0.0-develop
+    container_name: sonarr
+    networks:
+      - mynetwork
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    volumes:
+      - sonarr-config:/config
+      - torrent-downloads:/downloads
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  jackett:
+    profiles: ["jackett", "stack-1"]
+    container_name: jackett
+    image: lscr.io/linuxserver/jackett:0.21.462
+    networks:
+      - mynetwork
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    volumes:
+      - jackett-config:/config
+      - jackett-blackhole:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+
+  prowlarr:
+    profiles: ["prowlarr", "stack-1"]
+    container_name: prowlarr
+    image: linuxserver/prowlarr:1.6.3
+
+    networks:              
+      - mynetwork     
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    volumes:
+      - prowlarr-config:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  jellyfin:
+    profiles: ["base", "jelly", "stack-1", "stack-2"]
+    image: linuxserver/jellyfin:10.8.10
+    container_name: jellyfin
+    networks:
+      - mynetwork
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    volumes:
+      - jellyfin-config:/config
+      - torrent-downloads:/data
+  # devices:
+   #  - /dev/videoN:/dev/videoN # Mount GPU device 
+    ports:
+      - 8096:8096
+      - 7359:7359/udp
+      - 8920:8920
+    restart: unless-stopped
+
+volumes:
+  torrent-downloads:
+    driver: media
+  radarr-config:
+    driver: media
+  sonarr-config:
+    driver: media
+  jackett-config:
+    driver: media
+  jackett-blackhole:
+    driver: media
+  prowlarr-config:
+    driver: media
+  jellyfin-config:
+    driver: media
+  qbittorrent-config:
+    driver: media
+  tx-config:
+    driver: media
+  tx-watch:
+    driver: media
+
+networks:
+  mynetwork:
+    external: true
